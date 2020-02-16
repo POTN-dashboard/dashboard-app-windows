@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.rh": "cpp",
+        "xlocnum": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp",
+        "xiosbase": "cpp",
+        "stdexcept": "cpp"
+    }
+}

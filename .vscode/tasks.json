@@ -1,0 +1,78 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "msvc build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/EHsc",
+                "/Zi",
+                "/DUNICODE",
+                "/D_UNICODE",
+                "/I", "include",
+                "/Fe:main",
+                "src/main.cpp",
+                "src/memory.cpp",
+                "src/cpu.cpp",
+                "src/gpu.cpp",
+                // "src/amdgpu.cpp",
+                "src/nvidiagpu.cpp",
+                "src/DriverLoader.cpp",
+                "src/intelcpu.cpp",
+                "src/amdcpu.cpp",
+                "src/pdh.cpp",
+                "src/network.cpp",
+                "/link",
+                "/LIBPATH:lib",
+                // "/NODEFAULTLIB:msvcrt"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "rm *.obj *.exe *.pdb *.ilk"
+        },
+
+        {
+            "label": "build test",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/utf-8",
+                "/EHsc",
+                "/Zi",
+                "/DUNICODE",
+                "/D_UNICODE",
+                "/I", "include",
+                "/Fe:test",
+                "src/test.cpp",
+                "src/systime.cpp",
+                // "src/network.cpp",
+                // "src/pdh.cpp",
+                // "src/gpu.cpp",
+                // "src/nvidiagpu.cpp",
+                "/link",
+                "/LIBPATH:lib",
+                // "/NODEFAULTLIB:msvcrt"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+    ]
+}
