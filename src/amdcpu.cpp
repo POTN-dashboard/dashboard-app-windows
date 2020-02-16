@@ -11,12 +11,12 @@ using namespace AMDCPU;
 AMDCPU::InfoGetter::InfoGetter()
 {
     driverLoader.InitSvc(DRIVER_FILE, DRIVER_NAME, DRIVER_NAME, SERVICE_DEMAND_START);
-    if (DL_OK != driverLoader.CreateSvc())
+    if (DriverLoader::OK != driverLoader.CreateSvc())
     {
         driverLoader.UnloadSvc();
         throw std::runtime_error("[AMDCPU] Create driver service fail");
     }
-    if (DL_OK != driverLoader.StartSvc())
+    if (DriverLoader::OK != driverLoader.StartSvc())
     {
         driverLoader.UnloadSvc();
         throw std::runtime_error("[AMDCPU] Start driver service fail");

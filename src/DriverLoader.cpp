@@ -74,7 +74,7 @@ DriverLoader::~DriverLoader(void)
 DWORD DriverLoader::InitSvc(LPCWSTR fileName, LPCWSTR _lpServiceName, LPCWSTR _lpDisplayName, DWORD _dwStartType)
 {
 	if (IsInit())
-		return DL_OK;
+		return DriverLoader::OK;
 
 	WCHAR *driverPath = new WCHAR[MAX_PATH];
 	getDriverPath(driverPath, (WCHAR *)fileName);
@@ -90,21 +90,21 @@ DWORD DriverLoader::InitSvc(LPCWSTR fileName, LPCWSTR _lpServiceName, LPCWSTR _l
 	loaded = false;
 	started = false;
 
-	return DL_OK;
+	return DriverLoader::OK;
 }
 
 DWORD DriverLoader::CreateSvc(void)
 {
 	if (!IsInit())
-		return DL_NOT_INIT;
+		return DriverLoader::NOT_INIT;
 
 	if (IsLoaded())
-		return DL_OK;
+		return DriverLoader::OK;
 
 	SC_HANDLE hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 
 	if (hSCManager == NULL)
-		return DL_ERROR_SCMANAGER;
+		return DriverLoader::ERROR_SCMANAGER;
 
 	hService = CreateServiceW(hSCManager, lpServiceName, lpDisplayName,
 							  SERVICE_ALL_ACCESS,
@@ -140,35 +140,35 @@ DWORD DriverLoader::CreateSvc(void)
 		{
 			CloseServiceHandle(hSCManager);
 			wprintf(L"[DriverLoader] Driver path: %s\n", lpFilePath);
-			return DL_ERROR_CREATE;
+			return DriverLoader::ERROR_CREATE;
 		}
 	}
 
 	loaded = true;
 	CloseServiceHandle(hSCManager);
 
-	return DL_OK;
+	return DriverLoader::OK;
 }
 
 DWORD DriverLoader::StartSvc(void)
 {
 	if (!IsLoaded())
-		return DL_NOT_CREATE;
+		return DriverLoader::NOT_CREATE;
 
 	if (IsStarted())
-		return DL_OK;
+		return DriverLoader::OK;
 
 	SC_HANDLE hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 
 	if (hSCManager == NULL)
-		return DL_ERROR_SCMANAGER;
+		return DriverLoader::ERROR_SCMANAGER;
 
 	hService = OpenServiceW(hSCManager, lpServiceName, SERVICE_ALL_ACCESS);
 
 	if (hService == NULL)
 	{
 		CloseServiceHandle(hSCManager);
-		return DL_ERROR_OPEN;
+		return DriverLoader::ERROR_OPEN;
 	}
 
 	DWORD dwLastError;
@@ -185,9 +185,9 @@ DWORD DriverLoader::StartSvc(void)
 			DeleteService(hService);
 			CloseServiceHandle(hService);
 			hService = CreateServiceW(hSCManager,
-					lpServiceName, lpServiceName, SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
-					SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, lpFilePath,
-					NULL, NULL, NULL, NULL, NULL);
+									  lpServiceName, lpServiceName, SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
+									  SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, lpFilePath,
+									  NULL, NULL, NULL, NULL, NULL);
 			if (StartServiceW(hService, 0, NULL))
 			{
 				goto succeed;
@@ -198,14 +198,14 @@ DWORD DriverLoader::StartSvc(void)
 
 		CloseServiceHandle(hSCManager);
 		CloseServiceHandle(hService);
-		return DL_ERROR_START;
+		return DriverLoader::ERROR_START;
 	}
 
 succeed:
 	CloseServiceHandle(hSCManager);
 	started = true;
 
-	return DL_OK;
+	return DriverLoader::OK;
 }
 
 DWORD DriverLoader::StopSvc(void)
@@ -213,55 +213,55 @@ DWORD DriverLoader::StopSvc(void)
 	SERVICE_STATUS ss;
 
 	if (!IsStarted())
-		return DL_OK;
+		return DriverLoader::OK;
 
 	SC_HANDLE hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 
 	if (hSCManager == NULL)
-		return DL_ERROR_SCMANAGER;
+		return DriverLoader::ERROR_SCMANAGER;
 
 	hService = OpenServiceW(hSCManager, lpServiceName, SERVICE_ALL_ACCESS);
 
 	if (hService == NULL)
 	{
 		CloseServiceHandle(hSCManager);
-		return DL_ERROR_OPEN;
+		return DriverLoader::ERROR_OPEN;
 	}
 
 	if (ControlService(hService, SERVICE_CONTROL_STOP, &ss) == NULL)
 	{
 		CloseServiceHandle(hSCManager);
 		CloseServiceHandle(hService);
-		return DL_ERROR_STOP;
+		return DriverLoader::ERROR_STOP;
 	}
 
 	started = false;
 
 	CloseServiceHandle(hSCManager);
 	CloseServiceHandle(hService);
-	return DL_OK;
+	return DriverLoader::OK;
 }
 
 DWORD DriverLoader::UnloadSvc(void)
 {
 	if (!IsLoaded())
-		return DL_OK;
+		return DriverLoader::OK;
 
 	if (IsStarted())
-		if (StopSvc() != DL_OK)
-			return DL_ERROR_UNLOAD;
+		if (StopSvc() != DriverLoader::OK)
+			return DriverLoader::ERROR_UNLOAD;
 
 	SC_HANDLE hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 
 	if (hSCManager == NULL)
-		return DL_ERROR_SCMANAGER;
+		return DriverLoader::ERROR_SCMANAGER;
 
 	hService = OpenServiceW(hSCManager, lpServiceName, SERVICE_ALL_ACCESS);
 
 	if (hService == NULL)
 	{
 		CloseServiceHandle(hSCManager);
-		return DL_ERROR_OPEN;
+		return DriverLoader::ERROR_OPEN;
 	}
 
 	DeleteService(hService);
@@ -269,7 +269,7 @@ DWORD DriverLoader::UnloadSvc(void)
 
 	loaded = false;
 
-	return DL_OK;
+	return DriverLoader::OK;
 }
 
 BOOL DriverLoader::IsInit(void)

@@ -2,21 +2,21 @@
 
 #include <windows.h>
 
-//Error codes
-#define DL_OK (DWORD)0
-#define DL_NOT_CREATE (DWORD)1
-#define DL_NOT_START (DWORD)2
-#define DL_NOT_INIT (DWORD)3
-#define DL_ERROR_SCMANAGER (DWORD)4
-#define DL_ERROR_CREATE (DWORD)5
-#define DL_ERROR_START (DWORD)6
-#define DL_ERROR_OPEN (DWORD)7
-#define DL_ERROR_STOP (DWORD)8
-#define DL_ERROR_UNLOAD (DWORD)9
-
 class DriverLoader
 {
 public:
+	// Error Codes.
+	static const DWORD OK = 0;
+	static const DWORD NOT_CREATE = 1;
+	static const DWORD NOT_START = 2;
+	static const DWORD NOT_INIT = 3;
+	static const DWORD ERROR_SCMANAGER = 4;
+	static const DWORD ERROR_CREATE = 5;
+	static const DWORD ERROR_START = 6;
+	static const DWORD ERROR_OPEN = 7;
+	static const DWORD ERROR_STOP = 8;
+	static const DWORD ERROR_UNLOAD = 9;
+
 	//Constructor
 	DriverLoader(void);
 	DriverLoader(LPCWSTR fileName, LPCWSTR _lpServiceName, LPCWSTR _lpDisplayName, DWORD _dwStartType);
