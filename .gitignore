@@ -1,8 +1,4 @@
 *.obj
 *.pdb
 *.ilk
-*.dll
-*.sys
 *.exe
-
-lib/*
