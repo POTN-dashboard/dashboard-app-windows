@@ -5,6 +5,7 @@
         "xmemory": "cpp",
         "xstring": "cpp",
         "xiosbase": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "ostream": "cpp"
     }
 }
