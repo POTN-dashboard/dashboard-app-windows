@@ -32,9 +32,41 @@ const char *GPU::InfoGetter::GetName()
     return deviceName;
 }
 
+const char *GPU::InfoGetter::GetShortName()
+{
+    static char shortNameBuf[32];
+    static char *shortName = NULL;
+
+    if (NULL != shortName)
+    {
+        return shortName;
+    }
+    const char *name = GetName();
+    Brand brand = GetBrand();
+    if (AMD == brand)
+    {
+        shortName = (char *)name;
+    }
+    else if (Intel == brand)
+    {
+        shortName = (char *)name;
+    }
+    else if (Nvidia == brand)
+    {
+        shortName = (char *)name + 15;
+    }
+
+    return shortName;
+}
+
 Brand GPU::InfoGetter::GetBrand()
 {
-    const char* deviceName = GetName();
+    static Brand brand = Brand::Uninit;
+    if (brand != Brand::Uninit)
+    {
+        return brand;
+    }
+    const char *deviceName = GetName();
     char deviceNameLower[DEVICE_NAME_LEN];
     for (int i = 0; i < DEVICE_NAME_LEN; i++)
     {

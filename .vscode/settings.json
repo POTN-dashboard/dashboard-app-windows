@@ -7,6 +7,7 @@
         "xiosbase": "cpp",
         "stdexcept": "cpp",
         "ostream": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "thread": "cpp"
     }
 }

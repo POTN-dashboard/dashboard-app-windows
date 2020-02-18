@@ -35,10 +35,10 @@ Brand CPU::InfoGetter::GetBrand()
     int regs[4];
     __cpuid(regs, 0);
 
-    static int amdEbx =
+    static const int amdEbx =
         ((int)'h') << 24 | ((int)'t') << 16 | ((int)'u') << 8 | ((int)'A');
 
-    static int intelEbx =
+    static const int intelEbx =
         ((int)'u') << 24 | ((int)'n') << 16 | ((int)'e') << 8 | ((int)'G');
 
     if (regs[1] == amdEbx)
@@ -63,7 +63,7 @@ const char *CPU::InfoGetter::GetName()
 {
     static char name[64];
 
-    if (name[0] != 0)
+    if (0 != name[0])
     {
         return name;
     }
@@ -90,6 +90,72 @@ const char *CPU::InfoGetter::GetName()
     }
 
     return name;
+}
+
+static inline bool isNumber(char c)
+{
+    return ('0' <= c && c <= '9') ? true : false;
+}
+
+const char *CPU::InfoGetter::GetShortName()
+{
+    static char shortNameBuf[32];
+    static char *shortName = NULL;
+    if (NULL != shortName)
+    {
+        return shortName;
+    }
+
+    Brand brand = GetBrand();
+    const char *name = GetName();
+    if (AMD == brand)
+    {
+        shortName = (char *)name;
+    }
+    else if (Intel == brand)
+    {
+        bool inParen = false;
+        bool breakAfterSpace = false;
+        int j = 0;
+        for (int i = 0; name[i] != 0; i++)
+        {
+            if ('(' == name[i])
+            {
+                inParen = true;
+                continue;
+            }
+            if (')' == name[i])
+            {
+                inParen = false;
+                continue;
+            }
+            if (inParen)
+            {
+                continue;
+            }
+            if (' ' == name[i] && breakAfterSpace)
+            {
+                break;
+            }
+            if (isNumber(name[i]))
+            {
+                breakAfterSpace = true;
+            }
+            shortNameBuf[j++] = name[i];
+        }
+        // trim
+        int i;
+        for (i = 0; 0 != shortNameBuf[i]; i++)
+        {
+            if (' ' != shortNameBuf[i])
+            {
+                break;
+            }
+        }
+        shortName = shortNameBuf + i + 6;
+    }
+
+    return shortName;
 }
 
 UINT16 CPU::InfoGetter::GetBaseFreq()

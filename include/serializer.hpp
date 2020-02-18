@@ -22,22 +22,21 @@ public:
     void SerializeSystemInfo(BYTE *buf, int len);
 
 private:
+    bool done = false;
+
     CPU::InfoGetter *cpu;
     CPU::Info cpuInfo;
     std::mutex cpuInfoMutex;
-    bool cpuInfoGetterDone = false;
     std::thread *cpuInfoGetter;
 
     GPU::InfoGetter *gpu;
     GPU::Info gpuInfo;
     std::mutex gpuInfoMutex;
-    bool gpuInfoGetterDone = false;
     std::thread *gpuInfoGetter;
 
     Network::InfoGetter network;
     Network::Info networkInfo;
     std::mutex networkInfoMutex;
-    bool networkInfoGetterDone = false;
     std::thread *networkInfoGetter;
 
     Memory::InfoGetter mem;

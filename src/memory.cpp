@@ -9,17 +9,18 @@ using namespace Memory;
 const Info &Memory::InfoGetter::GetInfo()
 {
     MEMORYSTATUSEX mem;
-
+    UINT64 totalMem = 0;
     mem.dwLength = sizeof(MEMORYSTATUSEX);
-    if (!GlobalMemoryStatusEx(&mem))
+    if (GlobalMemoryStatusEx(&mem) && GetPhysicallyInstalledSystemMemory(&totalMem))
+    {
+        info.usage = mem.dwMemoryLoad;
+        info.total = totalMem / 1024;
+        info.used = info.total - (mem.ullAvailPhys / (1024 * 1024));
+    }
+    else
     {
         throw std::runtime_error("[Memory] Get memory info fail");
     }
-
-    info.usage = mem.dwMemoryLoad;
-    info.total = mem.ullTotalPhys / (1024 * 1024);
-    info.used = (mem.ullTotalPhys - mem.ullAvailPhys) / (1024 * 1024);
-
     return info;
 }
 

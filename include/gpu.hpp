@@ -7,6 +7,7 @@ namespace GPU
 
 enum Brand
 {
+    Uninit,
     AMD,
     Intel,
     Nvidia,
@@ -28,6 +29,7 @@ class InfoGetter
 public:
     static Brand GetBrand();
     static const char *GetName();
+    static const char *GetShortName();
     static void PrintBasicInfo();
 
     virtual ~InfoGetter();

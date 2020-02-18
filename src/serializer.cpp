@@ -1,4 +1,4 @@
-#include "Serializer.hpp"
+#include "serializer.hpp"
 #include "usb.hpp"
 
 Serializer::Serializer()
@@ -31,15 +31,16 @@ Serializer::Serializer()
 
     case GPU::Brand::Nvidia:
         gpu = new NvidiaGPU::InfoGetter();
+        break;
 
     default:
-        throw std::exception("[main] Unknown CPU");
+        throw std::exception("[main] Unknown GPU");
     }
 
     // threads for getting info
     cpuInfoGetter = new std::thread(
         [&]() {
-            while (!cpuInfoGetterDone)
+            while (!done)
             {
                 auto info = cpu->GetInfo(1000);
                 cpuInfoMutex.lock();
@@ -50,7 +51,7 @@ Serializer::Serializer()
 
     gpuInfoGetter = new std::thread(
         [&]() {
-            while (!gpuInfoGetterDone)
+            while (!done)
             {
                 auto info = gpu->GetInfo(1000);
                 gpuInfoMutex.lock();
@@ -61,7 +62,7 @@ Serializer::Serializer()
 
     networkInfoGetter = new std::thread(
         [&]() {
-            while (!networkInfoGetterDone)
+            while (!done)
             {
                 auto info = network.GetInfo(1000);
                 networkInfoMutex.lock();
@@ -76,9 +77,7 @@ Serializer::~Serializer()
     delete cpu;
     delete gpu;
 
-    cpuInfoGetterDone = true;
-    gpuInfoGetterDone = true;
-    networkInfoGetterDone = true;
+    done = true;
 
     cpuInfoGetter->join();
     gpuInfoGetter->join();
@@ -107,14 +106,14 @@ void Serializer::SerializeInitInfo(BYTE *buf, int len)
     // CPU name length, max is 20
     char nameBuf[21];
     memset(nameBuf, 0, sizeof(nameBuf));
-    memcpy(nameBuf, CPU::InfoGetter::GetName(), 20);
+    memcpy(nameBuf, CPU::InfoGetter::GetShortName(), 20);
     int nameLen = strlen(nameBuf);
     buf[3] = nameLen;
     memcpy(buf + 4, nameBuf, nameLen);
 
     // GPU name length, max is 20
     memset(nameBuf, 0, sizeof(nameBuf));
-    memcpy(nameBuf, GPU::InfoGetter::GetName(), 20);
+    memcpy(nameBuf, GPU::InfoGetter::GetShortName(), 20);
     nameLen = strlen(nameBuf);
     buf[24] = nameLen;
     memcpy(buf + 25, nameBuf, nameLen);
@@ -150,10 +149,10 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
     buf[10] = gpuInfo.GpuTemp;
     // VRAM used, integer part (GB)
     double vramUsed = gpuInfo.MemUsed / 1024.0;
+    gpuInfoMutex.unlock();
     buf[13] = (UINT8)(vramUsed);
     // VRAM used, decimal part (GB)
     buf[14] = (UINT8)((vramUsed - buf[13]) * 10);
-    gpuInfoMutex.unlock();
 
     // ----------------- RAM ------------------------
     double memUsed = mem.GetInfo().used / 1024.0;
@@ -164,19 +163,19 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
 
     // --------------- Network -----------------------
     networkInfoMutex.lock();
+    UINT32 upSpeed = networkInfo.upSpeed;
+    UINT32 downSpeed = networkInfo.downSpeed;
+    networkInfoMutex.unlock();
     // Network upload speed
-    UINT32 upSpeed = 260;
     buf[15] = (UINT8)(upSpeed >> 24);
     buf[16] = (UINT8)(upSpeed >> 16);
     buf[17] = (UINT8)(upSpeed >> 8);
     buf[18] = (UINT8)(upSpeed);
     // Network download speed
-    UINT32 downSpeed = 2440;
     buf[19] = (UINT8)(downSpeed >> 24);
     buf[20] = (UINT8)(downSpeed >> 16);
     buf[21] = (UINT8)(downSpeed >> 8);
     buf[22] = (UINT8)(downSpeed);
-    networkInfoMutex.unlock();
 
     // ----------------- Time ---------------------
     time.Update();

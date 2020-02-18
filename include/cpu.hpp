@@ -28,6 +28,7 @@ public:
     static Brand GetBrand();
     static UINT8 GetTotalProcessors();
     static const char *GetName();
+    static const char *GetShortName();
     static UINT16 GetBaseFreq();
     static void PrintBasicInfo();
 
