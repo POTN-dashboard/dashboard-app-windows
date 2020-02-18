@@ -47,7 +47,10 @@ NvidiaGPU::InfoGetter::~InfoGetter()
 
 const GPU::Info &NvidiaGPU::InfoGetter::GetInfo(UINT16 sampleTime)
 {
-    Sleep(sampleTime);
+    if (0 != sampleTime)
+    {
+        Sleep(sampleTime);
+    }
     nvmlReturn_t res;
     unsigned int gpuClock = 0;
     res = nvmlDeviceGetClockInfo(device, NVML_CLOCK_GRAPHICS, &gpuClock);

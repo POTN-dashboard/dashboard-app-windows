@@ -23,6 +23,9 @@
                 "src/amdcpu.cpp",
                 "src/pdh.cpp",
                 "src/network.cpp",
+                "src/systime.cpp",
+                "src/usb.cpp",
+                "src/serializer.cpp",
                 "/link",
                 "/LIBPATH:lib",
                 // "/NODEFAULTLIB:msvcrt"

@@ -139,7 +139,7 @@ void CPU::InfoGetter::PrintBasicInfo()
 void CPU::InfoGetter::PrintInfo()
 {
     printf("CPU:\t");
-    printf("freq: %dMHz\tusage: %d%%\ttemp: %dC\n", info.freq, info.usage, info.temp);
+    printf("freq: %dMHz\tusage: %d%%\ttemp: %dC\n", info.freq, info.load, info.temp);
 }
 
 CPU::InfoGetter::~InfoGetter()

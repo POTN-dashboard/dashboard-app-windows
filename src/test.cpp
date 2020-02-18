@@ -7,7 +7,7 @@
 
 void controlLoop(USB::Connector &usb);
 bool waitForReady(USB::Connector &usb);
-bool sendCpuGpuInfo(USB::Connector &usb);
+bool sendInitInfo(USB::Connector &usb);
 bool sendDataLoop(USB::Connector &usb);
 void serializeCpuGpuInfo(BYTE *buf, int len);
 void serializeComputerInfo(BYTE *buf, int len);
@@ -47,7 +47,7 @@ void controlLoop(USB::Connector &usb)
             continue;
         }
         puts("Device ready!");
-        if (!sendCpuGpuInfo(usb))
+        if (!sendInitInfo(usb))
         {
             puts("Device disconnected!");
             Sleep(1000);
@@ -86,7 +86,7 @@ bool waitForReady(USB::Connector &usb)
     }
 }
 
-bool sendCpuGpuInfo(USB::Connector &usb)
+bool sendInitInfo(USB::Connector &usb)
 {
     BYTE cpuGpuInfo[USB::Connector::MAX_PACK_SIZE];
     BYTE readBuf[USB::Connector::MAX_PACK_SIZE];

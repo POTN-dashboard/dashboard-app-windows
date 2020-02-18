@@ -48,7 +48,7 @@ const CPU::Info &IntelCPU::InfoGetter::GetInfo(UINT16 sampleTime)
 {
 	info.freq = getCpuCurFreq(baseFreq, FREQ_SAMPLE_CORE);
 	info.temp = (UINT8)ICpuTemp_ReadCPUTemp();
-	info.usage = this->GetUsage(sampleTime);
+	info.load = this->GetUsage(sampleTime);
 	return info;
 }
 

@@ -44,6 +44,6 @@ const CPU::Info &AMDCPU::InfoGetter::GetInfo(UINT16 sampleTime)
     cpuObj->GetCPUParameters(stData);
     info.freq = (UINT16) stData.dPeakSpeed;
     info.temp = (UINT8) stData.dTemperature;
-    info.usage = this->GetUsage(sampleTime);
+    info.load = this->GetUsage(sampleTime);
     return info;
 }
