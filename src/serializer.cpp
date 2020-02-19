@@ -146,16 +146,16 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
     buf[0] = USB::Connector::DATA_PACK;
     // CPU Freq
     buf[1] = 0;
-    buf[2] = (UINT8)(cpuInfo.freq >> 8);
-    buf[3] = (UINT8)(cpuInfo.freq);
+    buf[2] = cpuInfo.freq >> 8;
+    buf[3] = cpuInfo.freq;
     // CPU load
     buf[4] = cpuInfo.load;
     // CPU temp
     buf[5] = cpuInfo.temp;
     // GPU Freq
     buf[6] = 0;
-    buf[7] = (UINT8)(gpuInfo.GpuFreq >> 8);
-    buf[8] = (UINT8)(gpuInfo.GpuFreq);
+    buf[7] = gpuInfo.GpuFreq >> 8;
+    buf[8] = gpuInfo.GpuFreq;
     // GPU load
     buf[9] = gpuInfo.GpuLoad;
     // GPU temp
@@ -163,30 +163,30 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
     // RAM
     double memUsed = mem.GetInfo().used / 1024.0;
     // RAM used, integer part (GB)
-    buf[11] = (UINT8)(memUsed);
+    buf[11] = memUsed;
     // RAM used, decimal part (GB)
-    buf[12] = (UINT8)((memUsed - buf[11]) * 10);
+    buf[12] = (memUsed - buf[11]) * 10;
     // VRAM
     double vramUsed = gpuInfo.MemUsed / 1024.0;
     // VRAM used, integer part (GB)
-    buf[13] = (UINT8)(vramUsed);
+    buf[13] = vramUsed;
     // VRAM used, decimal part (GB)
-    buf[14] = (UINT8)((vramUsed - buf[13]) * 10);
+    buf[14] = (vramUsed - buf[13]) * 10;
     // Network upload speed
-    buf[15] = (UINT8)(networkInfo.upSpeed >> 24);
-    buf[16] = (UINT8)(networkInfo.upSpeed >> 16);
-    buf[17] = (UINT8)(networkInfo.upSpeed >> 8);
-    buf[18] = (UINT8)(networkInfo.upSpeed);
+    buf[15] = networkInfo.upSpeed >> 24;
+    buf[16] = networkInfo.upSpeed >> 16;
+    buf[17] = networkInfo.upSpeed >> 8;
+    buf[18] = networkInfo.upSpeed;
     // Network download speed
-    buf[19] = (UINT8)(networkInfo.downSpeed >> 24);
-    buf[20] = (UINT8)(networkInfo.downSpeed >> 16);
-    buf[21] = (UINT8)(networkInfo.downSpeed >> 8);
-    buf[22] = (UINT8)(networkInfo.downSpeed);
+    buf[19] = networkInfo.downSpeed >> 24;
+    buf[20] = networkInfo.downSpeed >> 16;
+    buf[21] = networkInfo.downSpeed >> 8;
+    buf[22] = networkInfo.downSpeed;
     // Time
     time.Update();
     // Year
-    buf[23] = (UINT8)(time.year >> 8);
-    buf[24] = (UINT8)(time.year);
+    buf[23] = time.year >> 8;
+    buf[24] = time.year;
     // Month
     buf[25] = time.month;
     // Day of week
