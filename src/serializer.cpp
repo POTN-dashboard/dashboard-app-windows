@@ -40,9 +40,10 @@ Serializer::Serializer()
     // threads for getting info
     cpuInfoGetter = new std::thread(
         [&]() {
+            CPU::Info info;
             while (!done)
             {
-                auto info = cpu->GetInfo(1000);
+                info = cpu->GetInfo(1000);
                 cpuInfoMutex.lock();
                 cpuInfo = info;
                 cpuInfoMutex.unlock();
@@ -51,9 +52,10 @@ Serializer::Serializer()
 
     gpuInfoGetter = new std::thread(
         [&]() {
+            GPU::Info info;
             while (!done)
             {
-                auto info = gpu->GetInfo(1000);
+                info = gpu->GetInfo(1000);
                 gpuInfoMutex.lock();
                 gpuInfo = info;
                 gpuInfoMutex.unlock();
@@ -62,9 +64,10 @@ Serializer::Serializer()
 
     networkInfoGetter = new std::thread(
         [&]() {
+            Network::Info info;
             while (!done)
             {
-                auto info = network.GetInfo(1000);
+                info = network.GetInfo(1000);
                 networkInfoMutex.lock();
                 networkInfo = info;
                 networkInfoMutex.unlock();
@@ -121,12 +124,26 @@ void Serializer::SerializeInitInfo(BYTE *buf, int len)
 
 void Serializer::SerializeSystemInfo(BYTE *buf, int len)
 {
+    CPU::Info cpuInfo;
+    GPU::Info gpuInfo;
+    Network::Info networkInfo;
+
+    cpuInfoMutex.lock();
+    cpuInfo = this->cpuInfo;
+    cpuInfoMutex.unlock();
+
+    gpuInfoMutex.lock();
+    gpuInfo = this->gpuInfo;
+    gpuInfoMutex.unlock();
+
+    networkInfoMutex.lock();
+    networkInfo = this->networkInfo;
+    networkInfoMutex.unlock();
+
     memset(buf, 0, len);
 
+    // Package info
     buf[0] = USB::Connector::DATA_PACK;
-
-    // ----------------- CPU ------------------------
-    cpuInfoMutex.lock();
     // CPU Freq
     buf[1] = 0;
     buf[2] = (UINT8)(cpuInfo.freq >> 8);
@@ -135,10 +152,6 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
     buf[4] = cpuInfo.load;
     // CPU temp
     buf[5] = cpuInfo.temp;
-    cpuInfoMutex.unlock();
-
-    // ----------------- GPU -------------------------
-    gpuInfoMutex.lock();
     // GPU Freq
     buf[6] = 0;
     buf[7] = (UINT8)(gpuInfo.GpuFreq >> 8);
@@ -147,37 +160,29 @@ void Serializer::SerializeSystemInfo(BYTE *buf, int len)
     buf[9] = gpuInfo.GpuLoad;
     // GPU temp
     buf[10] = gpuInfo.GpuTemp;
-    // VRAM used, integer part (GB)
-    double vramUsed = gpuInfo.MemUsed / 1024.0;
-    gpuInfoMutex.unlock();
-    buf[13] = (UINT8)(vramUsed);
-    // VRAM used, decimal part (GB)
-    buf[14] = (UINT8)((vramUsed - buf[13]) * 10);
-
-    // ----------------- RAM ------------------------
+    // RAM
     double memUsed = mem.GetInfo().used / 1024.0;
     // RAM used, integer part (GB)
     buf[11] = (UINT8)(memUsed);
     // RAM used, decimal part (GB)
     buf[12] = (UINT8)((memUsed - buf[11]) * 10);
-
-    // --------------- Network -----------------------
-    networkInfoMutex.lock();
-    UINT32 upSpeed = networkInfo.upSpeed;
-    UINT32 downSpeed = networkInfo.downSpeed;
-    networkInfoMutex.unlock();
+    // VRAM
+    double vramUsed = gpuInfo.MemUsed / 1024.0;
+    // VRAM used, integer part (GB)
+    buf[13] = (UINT8)(vramUsed);
+    // VRAM used, decimal part (GB)
+    buf[14] = (UINT8)((vramUsed - buf[13]) * 10);
     // Network upload speed
-    buf[15] = (UINT8)(upSpeed >> 24);
-    buf[16] = (UINT8)(upSpeed >> 16);
-    buf[17] = (UINT8)(upSpeed >> 8);
-    buf[18] = (UINT8)(upSpeed);
+    buf[15] = (UINT8)(networkInfo.upSpeed >> 24);
+    buf[16] = (UINT8)(networkInfo.upSpeed >> 16);
+    buf[17] = (UINT8)(networkInfo.upSpeed >> 8);
+    buf[18] = (UINT8)(networkInfo.upSpeed);
     // Network download speed
-    buf[19] = (UINT8)(downSpeed >> 24);
-    buf[20] = (UINT8)(downSpeed >> 16);
-    buf[21] = (UINT8)(downSpeed >> 8);
-    buf[22] = (UINT8)(downSpeed);
-
-    // ----------------- Time ---------------------
+    buf[19] = (UINT8)(networkInfo.downSpeed >> 24);
+    buf[20] = (UINT8)(networkInfo.downSpeed >> 16);
+    buf[21] = (UINT8)(networkInfo.downSpeed >> 8);
+    buf[22] = (UINT8)(networkInfo.downSpeed);
+    // Time
     time.Update();
     // Year
     buf[23] = (UINT8)(time.year >> 8);
