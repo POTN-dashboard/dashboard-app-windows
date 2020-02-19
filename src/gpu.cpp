@@ -1,34 +1,50 @@
 #include <windows.h>
 #include <cstdio>
-#include <cstring>
+#include <d3d9.h>
 
+#include "initializer.h"
 #include "gpu.hpp"
 
-#define DEVICE_NAME_LEN 128
+#define DEVICE_NAME_LEN 127
 
-#pragma comment(lib, "User32.lib")
+#pragma comment(lib, "d3d9.lib")
 
 using namespace GPU;
 
+static Brand brand = Brand::Uninit;
+static char deviceNameBuf[DEVICE_NAME_LEN + 1];
+static char *deviceName = nullptr;
+
+INITIALIZER(init)
+{
+    IDirect3D9 *d3dobject = Direct3DCreate9(D3D_SDK_VERSION);
+    D3DADAPTER_IDENTIFIER9 identifier;
+    d3dobject->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &identifier);
+    memcpy(deviceNameBuf, identifier.Description, DEVICE_NAME_LEN);
+    deviceName = deviceNameBuf;
+    switch (identifier.VendorId)
+    {
+    case 0x1002:
+        brand = Brand::AMD;
+        break;
+
+    case 0x8086:
+        brand = Brand::Intel;
+        break;
+
+    case 0x10DE:
+        brand = Brand::Nvidia;
+        break;
+
+    default:
+        brand = Brand::Unknown;
+    }
+
+    d3dobject->Release();
+}
+
 const char *GPU::InfoGetter::GetName()
 {
-    static char deviceName[DEVICE_NAME_LEN];
-    if (deviceName[0] != 0)
-    {
-        return deviceName;
-    }
-    DISPLAY_DEVICEA device;
-    int displayIndex = 0;
-    device.cb = sizeof(device);
-    while (EnumDisplayDevicesA(0, displayIndex, &device, 0))
-    {
-        if (device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
-        {
-            break;
-        }
-        displayIndex++;
-    }
-    memcpy(deviceName, device.DeviceString, DEVICE_NAME_LEN);
     return deviceName;
 }
 
@@ -61,30 +77,7 @@ const char *GPU::InfoGetter::GetShortName()
 
 Brand GPU::InfoGetter::GetBrand()
 {
-    static Brand brand = Brand::Uninit;
-    if (brand != Brand::Uninit)
-    {
-        return brand;
-    }
-    const char *deviceName = GetName();
-    char deviceNameLower[DEVICE_NAME_LEN];
-    for (int i = 0; i < DEVICE_NAME_LEN; i++)
-    {
-        deviceNameLower[i] = tolower(deviceName[i]);
-    }
-    if (strstr(deviceNameLower, "amd"))
-    {
-        return Brand::AMD;
-    }
-    if (strstr(deviceNameLower, "intel"))
-    {
-        return Brand::Intel;
-    }
-    if (strstr(deviceNameLower, "nvidia"))
-    {
-        return Brand::Nvidia;
-    }
-    return Brand::Unknown;
+    return brand;
 }
 
 GPU::InfoGetter::~InfoGetter()

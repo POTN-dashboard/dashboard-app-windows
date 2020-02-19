@@ -18,7 +18,7 @@ enum Brand
 typedef struct
 {
     UINT16 freq; // MHz
-    UINT8 load; // %
+    UINT8 load;  // %
     UINT8 temp;  // C
 } Info;
 

@@ -27,7 +27,7 @@ Brand CPU::InfoGetter::GetBrand()
 {
     static Brand brand = Brand::Uninit;
 
-    if (brand != Brand::Uninit)
+    if (Brand::Uninit != brand)
     {
         return brand;
     }
@@ -68,24 +68,24 @@ const char *CPU::InfoGetter::GetName()
         return name;
     }
 
-    int cpu_info[4] = {-1};
+    int cpuInfo[4] = {-1};
     memset(name, '\0', sizeof(name));
-    __cpuid(cpu_info, 0x80000000);
-    unsigned n_ex_ids = cpu_info[0];
-    for (int i = 0x80000000; i <= n_ex_ids; i++)
+    __cpuid(cpuInfo, 0x80000000);
+    unsigned nExIds = cpuInfo[0];
+    for (int i = 0x80000000; i <= nExIds; i++)
     {
-        __cpuid(cpu_info, i);
+        __cpuid(cpuInfo, i);
         if (i == 0x80000002)
         {
-            memcpy(name, cpu_info, sizeof(cpu_info));
+            memcpy(name, cpuInfo, sizeof(cpuInfo));
         }
         else if (i == 0x80000003)
         {
-            memcpy(name + 16, cpu_info, sizeof(cpu_info));
+            memcpy(name + 16, cpuInfo, sizeof(cpuInfo));
         }
         else if (i == 0x80000004)
         {
-            memcpy(name + 32, cpu_info, sizeof(cpu_info));
+            memcpy(name + 32, cpuInfo, sizeof(cpuInfo));
         }
     }
 
