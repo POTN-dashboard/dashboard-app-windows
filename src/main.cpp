@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <thread>
 #include <mutex>
+#include <locale>
 
 #include "serializer.hpp"
 #include "usb.hpp"
@@ -42,7 +43,7 @@ void init()
     signal(SIGILL, cleanAndExit);
     signal(SIGFPE, cleanAndExit);
 
-    SetConsoleOutputCP(65001);
+    setlocale(LC_ALL, "chs");
 
     serializer = new Serializer();
 }

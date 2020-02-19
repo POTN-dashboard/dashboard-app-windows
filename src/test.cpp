@@ -2,16 +2,17 @@
 #include <iostream>
 #include <exception>
 #include <windows.h>
+#include <locale>
 
-#include "gpu.hpp"
+// #include "gpu.hpp"
 
 int main(int argc, char **argv)
 {
-    SetConsoleOutputCP(65001);
+    setlocale(LC_ALL, "chs");
 
     try
     {
-        GPU::InfoGetter::PrintBasicInfo();
+        
     }
     catch (const std::exception &e)
     {

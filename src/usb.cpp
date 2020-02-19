@@ -79,7 +79,7 @@ Error USB::Connector::Read(BYTE *buf, int bufLen, int *actualLen)
     if (0 < res)
     {
         *actualLen = res;
-        printf("[USB] Read %d bytes\n", res);
+        // printf("[USB] Read %d bytes\n", res);
         return Error::OK;
     }
     wprintf(L"[USB] Read fail: %ls\n", hid_error(dev));
@@ -97,6 +97,6 @@ Error USB::Connector::Write(BYTE *buf, int len)
         wprintf(L"[USB] Write fail: %ls\n", hid_error(dev));
         return Error::DISCONNECTED;
     }
-    wprintf(L"[USB] Write %d bytes\n", res);
+    // wprintf(L"[USB] Write %d bytes\n", res);
     return Error::OK;
 }
