@@ -23,7 +23,7 @@ std::runtime_error USB::Connector::error(const char *msg)
     return std::runtime_error(errorStr);
 }
 
-USB::Connector::Connector() : dev(NULL)
+USB::Connector::Connector() : dev(NULL)   //初始化列表， 字符串
 {
     int res = hid_init();
     if (0 != res)

@@ -26,7 +26,7 @@ int main()
         USB::Connector usb;
         controlLoop(usb);
     }
-    catch (const std::exception &e)
+    catch (const std::exception &e)     //捕获异常
     {
         puts(e.what());
     }
@@ -36,14 +36,14 @@ int main()
 
 void init()
 {
-    signal(SIGABRT, cleanAndExit);
-    signal(SIGTERM, cleanAndExit);
-    signal(SIGINT, cleanAndExit);
-    signal(SIGSEGV, cleanAndExit);
-    signal(SIGILL, cleanAndExit);
-    signal(SIGFPE, cleanAndExit);
+    signal(SIGABRT, cleanAndExit);  // 异常终止 abort
+    signal(SIGTERM, cleanAndExit);  //终止
+    signal(SIGINT, cleanAndExit);   //CTRL+C Interrupt from keyboard
+    signal(SIGSEGV, cleanAndExit);  //访问无效内存 或没有权限的内存 
+    signal(SIGILL, cleanAndExit);   //指令中有非法指令
+    signal(SIGFPE, cleanAndExit);   // 浮点运算错误
 
-    setlocale(LC_ALL, "chs");
+    setlocale(LC_ALL, "chs");      //地域设置，编码ANSI 中文不会乱码
 
     serializer = new Serializer();
 }
@@ -51,8 +51,8 @@ void init()
 void cleanAndExit(int sig)
 {
     delete serializer;
-    system("pause");
-    exit(sig);
+    system("pause");       // DOS调用 黑框框不会闪退 
+    exit(sig);              
 }
 
 void controlLoop(USB::Connector &usb)
