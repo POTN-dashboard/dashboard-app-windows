@@ -105,7 +105,7 @@ bool waitForReady(USB::Connector &usb)
         {
             continue;
         }
-        if (buf[0] = USB::Connector::READY_PACK)
+        if (buf[0] == USB::Connector::READY_PACK)
         {
             return true;
         }
