@@ -61,13 +61,16 @@ bool USB::Connector::Connect()
     }
     if (0 == path[0])
     {
+        hid_free_enumeration(devs);
         return false;
     }
     dev = hid_open_path(path);
     if (NULL == dev)
     {
+        hid_free_enumeration(devs);
         throw error("Open device fail");
     }
+    hid_free_enumeration(devs);
     return true;
 }
 
