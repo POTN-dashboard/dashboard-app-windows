@@ -46,13 +46,15 @@ bool USB::Connector::Connect()
 {
     hid_device_info *devs = hid_enumerate(VID, PID);
     hid_device_info *curDev = devs;
-    char path[128];
+    char path[256];
     path[0] = 0;
     while (NULL != curDev)
     {
-        if (INTERFACE_INDEX == curDev->interface_number)
+        int ifNum = curDev->interface_number;
+        // In windows, if there is only one interface, ifNum will be -1.
+        if (-1 == ifNum || INTERFACE_INDEX == ifNum)
         {
-            strcpy(path, curDev->path);
+            strcpy_s(path, curDev->path);
             break;
         }
         curDev = curDev->next;
